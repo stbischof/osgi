@@ -24,7 +24,9 @@
         including rich client applications, server-side systems and cloud and container based architectures. 
         As these applications are generally based on many bundles, describing each bundle individually 
         in the application definition becomes unwieldy once the number of bundles reaches a certain level. 
+    </para>
 
+    <para>
         When developing large scale applications it is often the case that few people know the role of every 
         bundle or configuration item in the application. To keep the architecture understandable a grouping 
         mechanism is needed that allows for the representation of parts of the application into larger 
@@ -32,16 +34,22 @@
         spread across the organization will need to be able to both develop new parts for the application 
         as well as make tweaks or enhancements to their respective parts such as adding configuration and 
         resources or changing one or more bundles relevant to their part of the application.
+    </para>
 
+    <para>
         The higher level constructs that define the application should be reusable in different contexts, 
         for example if one team has developed a component to handle job processing, different applications 
         should be able to use it, and if needed tune its configuration or other aspects so that it works in 
         each setting without having to know each and every detail that the job processing component is built 
         up from.
+    </para>
 
+    <para>
         Applications often carry additional definitions, for example configurations or custom artifacts.
         Architects often require that the various components be encapsulated in a single definition.
+    </para>
 
+    <para>
         Systems are often composed by reusing existing building blocks, combining various applications 
         or subsystems together to create a larger system, where all these building blocks work together.
         The architect of these systems need to think about components without having to dive into the 
@@ -49,11 +57,39 @@
 
         This specification defines OSGi Features which can be used to model such applications. Features
         contain the definition of an application or component and can be composed into larger systems.
-
-
     </para>
 
+
+    <section>
+      <title>Essentials</title>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis>Declarative</emphasis> - Feature models are declarative and can be mapped to different implementations.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis>Extensible</emphasis> - Features are extensible with custom content to allow all information related to 
+          a feature to be co-located.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis>Human Readable</emphasis> - No special software is needed to read or author feature models.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis>Machine Readable</emphasis> - Feature models can be easily processed by tools.
+          </para>
+        </listitem>
+
+      </itemizedlist>
+    </section>
+
   </section>
+
 
   <section>
     <title>Entities</title>
@@ -62,11 +98,23 @@
 
     <itemizedlist>
       <listitem>
-        <para><emphasis>Entity 1</emphasis> - ...</para>
+        <para><emphasis>Feature</emphasis> - A feature contains a number of entities that, when provided to a feature launcher can be turned into an executable system. Features can also be building blocks which are assembled into larger systems.</para>
       </listitem>
 
       <listitem>
-        <para><emphasis>Entity 2</emphasis> - ...</para>
+        <para><emphasis>Bundles</emphasis> - A feature can contain one ore more bundles.</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis>Configuration</emphasis> - A feature can contain configurations applied to the Configuration Admin specification.</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis>Extension</emphasis> - A feature can contain a number of extensions with custom content.</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis>Properties</emphasis> - Framework properties can be specified in a feature.</para>
       </listitem>
 
     </itemizedlist>
