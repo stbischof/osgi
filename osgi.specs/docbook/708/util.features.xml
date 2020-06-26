@@ -182,14 +182,65 @@ As Features are immutable, a given Feature ID always refers to the same Feature.
       </para>
     </section>
   </section>
+
+  <section>
+    <title>Bundles</title>
+    <para>
+      Features often list a number of bundles that provide the functionality provided by the Feature. Bundles are listed by referencing them so that they can be resolved from a repository. Bundles can have metadata associated with them, such as the relative start order of the bundle in the Feature. Custom metadata can also be provided. A single Feature can provide multiple versions of the same bundle, if desired.
+    </para>
+    <para>
+      Bundles are referenced using the identifier format described in 
+      <xref linkend="util.feature-identifiers"/>.
+      This means that Bundles are referenced using their Maven coordinates.
+    </para>
+  </section>
+
+  <section>
+    <title>Capabilities &amp; Requirements</title>
+    <para>
+      Features inherit all capabilities an requirements from their bundles. Additional capabilities and requirements can be added to the feature directly.
+    </para>
+  </section>
+
+  <section>
+    <title>Configurations</title>
+    <para>
+      Features support configuration using the OSGi Configurator syntax.
+    </para>
+
+    <para>
+      It is an error to define the same PID (or Factory PID) twice in a single feature model.
+    </para>
+  </section>
+
+  <section>
+    <title>Framework properties</title>
+    <para>
+      When a Feature is launched in an OSGi framework it may be necessary to specify Framework properties. These can be provided in the Framework Properties section of the Feature Model.
+      If a Feature Management Agent is not able to set the Framework properties it may fail.
+    </para>
+  </section>
+
+  <section>
+    <title>Variables</title>
+    <para>
+      Configurations and Framework Properties support late binding of values. This enables setting these items through a Management Agent, for example to specify a database user name or other information that may be variable between runtimes.
+    </para>
+  </section>
+
+  <section>
+    <title>Prototype</title>
+    <para>
+      If a Feature is similar to another Feature, it can use the other Feature as its prototype. Entities can be removed from the prototype and additional entities can be added in the resulting Feature. Prototypes can be used to create variants of existing Features. The newly created Features must have a different ID than the prototype they’re based on. 
+    </para>
+  </section>
+    
   
   <section>
     <title>Security</title>
 
-    <para>An implementation of this specification will require the use of Java
-    Reflection APIs. Therefore it should have the appropriate permissions to
-    perform these operations when running under the Java Security
-    model.</para>
+    <para>
+    ...</para>
   </section>
 
   <!--
