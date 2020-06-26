@@ -181,6 +181,55 @@ Features may have dependencies on other Features. Features inherit the capabilit
 As Features are immutable, a given Feature ID always refers to the same Feature.
       </para>
     </section>
+    
+    <section>
+      <title>Attributes</title>
+      <para>
+        A feature can have the following attributes:
+      </para>
+
+      <table rowheader="firstcol">
+        <title>Feature Attributes</title>
+
+        <tgroup cols="3">
+          <thead>
+            <row>
+              <entry>Attribute</entry>
+              <entry>Data Type</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>Name</entry>
+              <entry>String</entry>
+              <entry>The short descriptive name of the feature.</entry>
+            </row>
+
+            <row>
+              <entry>Description</entry>
+              <entry>String</entry>
+              <entry>A longer description of the feature.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>
+        Example:
+        ...
+      </para>
+      <!--
+        String getName();
+    String getDescription();
+    String getVendor();
+    String getLicense();
+    String getLocation();
+    boolean isComplete();
+      boolean isFinal();
+      -->
+    </section>
   </section>
 
   <section>
@@ -214,7 +263,7 @@ As Features are immutable, a given Feature ID always refers to the same Feature.
   </section>
 
   <section>
-    <title>Framework properties</title>
+    <title>Framework Properties</title>
     <para>
       When a Feature is launched in an OSGi framework it may be necessary to specify Framework properties. These can be provided in the Framework Properties section of the Feature Model.
       If a Feature Management Agent is not able to set the Framework properties it may fail.
