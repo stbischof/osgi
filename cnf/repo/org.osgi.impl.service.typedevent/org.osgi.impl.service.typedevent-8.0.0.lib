@@ -1,0 +1,3 @@
+org.osgi.service.typedevent; version=latest
+org.osgi.impl.service.component; version=latest
+org.osgi.impl.service.typedevent; version=0.0.1
