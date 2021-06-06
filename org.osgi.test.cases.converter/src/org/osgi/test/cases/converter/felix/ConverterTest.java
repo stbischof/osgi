@@ -667,7 +667,7 @@ public class ConverterTest {
 
 		Map< ? , ? > m = new HashMap<>();
 
-		MyIntf i = c.convert(m).to(MyIntf.class);
+		MyIntfException i = c.convert(m).to(MyIntfException.class);
 		assertEquals(123, i.value());
 	}
 
@@ -1522,12 +1522,8 @@ public class ConverterTest {
 
 		PrefixInterface i = converter.convert(m).to(PrefixInterface.class);
 		assertEquals(327L, i.width());
-		try {
-			i.length();
-			fail("Should have thrown an exception");
-		} catch (ConversionException ce) {
-			// good
-		}
+
+		assertEquals(0, i.length());
 
 		PrefixInterface i2 = new PrefixInterface() {
 			@Override
@@ -1672,12 +1668,15 @@ public class ConverterTest {
 	@Test
 	public void testMapToInterfaceWithOptionalValue() throws Exception {
 		ConverterBuilder cb = Converters.newConverterBuilder();
-		cb.errorHandler(new ConverterFunction() {
+		cb.rule(MyIntf2.class, new ConverterFunction() {
 			@Override
 			public Object apply(Object pObj, Type pTargetType)
 					throws Exception {
-				if ("java.lang.Integer".equals(pTargetType.getTypeName())) {
-					return 0;
+				if (pObj instanceof Map) {
+					Map<String,Object> map = (Map<String,Object>) pObj;
+					if (!map.containsKey("value")) {
+						map.put("value", 0);
+					}
 				}
 				return ConverterFunction.CANNOT_HANDLE;
 			}
@@ -1711,6 +1710,51 @@ public class ConverterTest {
 		assertNotNull(k);
 	}
 
+	static interface InteraceString{
+		public String nonDefaultMethodString();
+
+		public String value();
+	}
+	
+	static interface InteraceInteger{
+		public Integer nonDefaultMethodInteger();
+
+		public Integer value();
+	}
+	
+	static interface InteraceInt{
+		public int nonDefaultMethodInt();
+
+		public int value();
+	}
+		
+	
+	@Test
+	public void testInterfaceMethod() throws Throwable {
+
+		InteraceString iString = Converters
+				.standardConverter()
+				.convert(new HashMap<String,Object>())
+				.to(InteraceString.class);
+
+		InteraceInt iInt = Converters.standardConverter()
+				.convert(new HashMap<String,Object>())
+				.to(InteraceInt.class);
+
+		InteraceInteger iInteger = Converters.standardConverter()
+				.convert(new HashMap<String,Object>())
+				.to(InteraceInteger.class);
+
+		assertNull(iString.nonDefaultMethodString());
+		assertNull(iString.value());
+		
+		assertNull(iInteger.nonDefaultMethodInteger());
+		assertNull(iInteger.value());
+
+		assertEquals(0, iInt.nonDefaultMethodInt());
+		assertEquals(0, iInt.value());
+	}
+
 	@Test
 	public void testDefaultInterfaceMethod() throws Throwable {
 		Class< ? > clazz = InterfaceWithDefaultMethod.class;
@@ -1719,6 +1763,7 @@ public class ConverterTest {
 				.convert(new HashMap<String,Object>())
 				.to(clazz);
 		assertEquals(InterfaceWithDefaultMethod.RESULT, i.defaultMethod());
+		assertNull(i.defaultMethodNull());
 	}
 
 	@Test
@@ -1769,6 +1814,11 @@ public class ConverterTest {
 		}
 	}
 
+	public static interface MyIntfException {
+		default int value() {
+			throw new RuntimeException();
+		}
+	}
 	public static interface MyIntf {
 		int value();
 	}

@@ -55,6 +55,20 @@ class Util {
 		boxedClasses = Collections.unmodifiableMap(m);
 	}
 
+	private static final Map<Class< ? >,Object>	defaultPrimitives;
+	static {
+		Map<Class< ? >,Object> prim = new HashMap<>();
+		prim.put(int.class, Integer.valueOf(0));
+		prim.put(long.class, Long.valueOf(0));
+		prim.put(double.class, Double.valueOf(0));
+		prim.put(float.class, Float.valueOf(0));
+		prim.put(boolean.class, Boolean.FALSE);
+		prim.put(char.class, "");
+		prim.put(byte.class, Byte.valueOf((byte) 0));
+		prim.put(short.class, "");
+		defaultPrimitives = Collections.unmodifiableMap(prim);
+	}
+
 	private Util() {
 	} // prevent instantiation
 
@@ -80,6 +94,10 @@ class Util {
 			return boxed;
 		else
 			return cls;
+	}
+
+	static Object defaultPrimitives(Class< ? > cls) {
+		return defaultPrimitives.get(cls);
 	}
 
 	static Map<String,Method> getBeanKeys(Class< ? > beanClass) {

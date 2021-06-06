@@ -22,4 +22,8 @@ public interface InterfaceWithDefaultMethod {
 	public default String defaultMethod() {
 		return RESULT;
 	}
+
+	public default String defaultMethodNull() {
+		return null;
+	}
 }

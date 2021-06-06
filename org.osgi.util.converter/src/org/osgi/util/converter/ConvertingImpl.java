@@ -583,7 +583,8 @@ class ConvertingImpl extends AbstractSpecifying<Converting>
 		if (ctrCls == null)
 			ctrCls = targetClass;
 
-		Map instance = (Map) createMapOrCollection(ctrCls, m.size());
+		Map<Object,Object> instance = (Map<Object,Object>) createMapOrCollection(
+				ctrCls, m.size());
 		if (instance == null)
 			return null;
 
@@ -851,6 +852,16 @@ class ConvertingImpl extends AbstractSpecifying<Converting>
 									.unreflectSpecial(method, cls)
 									.bindTo(proxy)
 									.invokeWithArguments(args);
+						}
+						return val;
+					}
+					else if (cls.isInterface()) {
+						Class< ? > returnType = method.getReturnType();
+						if (!returnType.isPrimitive()) {
+							return null;
+						}
+						if (returnType != void.class) {
+							return Util.defaultPrimitives(returnType);
 						}
 					}
 
