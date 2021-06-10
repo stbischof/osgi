@@ -1,6 +1,10 @@
 # Set javac settings from JDT prefs
 -include: ${build}/eclipse/jdt.bnd, ${build}/osgi.tck.junit-platform.bnd, ${build}/cmpn.bnd
 
+isPreJava17: ${is;${ncompare;17;${javac.target}};-1}
+
+src=${if;${isPreJava17};${^src};${^src},src-java17}
+
 Bundle-Description = A test case for Converter.
 
 -conditionalpackage = org.osgi.test.support.*
@@ -11,12 +15,13 @@ Import-Package: ${-signaturetest}, *
 -signaturetest = org.osgi.util.converter
 
 -buildpath: \
-	osgi.annotation;maven-scope=provided;version=${osgi.annotation.version},\
+	osgi.annotation;maven-scope=provided;version='${osgi.annotation.version}',\
 	org.osgi.test.support;version=project,\
-    org.osgi.framework;maven-scope=provided;version=1.8,\
-    org.osgi.dto;maven-scope=provided;version=1.0,\
+	org.osgi.framework;maven-scope=provided;version='1.8',\
+	org.osgi.dto;maven-scope=provided;version='1.0',\
 	org.osgi.util.converter;version=latest,\
-	org.osgi.util.function;version=1.0
+	org.osgi.util.function;version='1.0',\
+	org.osgi.service.metatype.annotations
 
 -runbundles: \
 	org.osgi.util.converter;version=latest, \

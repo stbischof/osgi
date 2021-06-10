@@ -29,6 +29,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -62,6 +63,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.stream.Stream;
 
 /**
  * @author $Id$
@@ -704,8 +706,60 @@ class ConvertingImpl extends AbstractSpecifying<Converting>
 			return convertToInterface(sourceClass, targetAsClass, converter);
 		else if (targetAsJavaBean)
 			return convertToJavaBean(sourceClass, targetAsClass, converter);
+		else if (RecordUtil.isRecord(targetClass)) {
+			return convertToRecord(sourceClass, targetAsClass, converter);
+		}
 		throw new ConversionException(
 				"Cannot convert " + object + " to " + targetAsClass);
+	}
+
+	private Object convertToRecord(Class< ? > sourceClass2,
+			Class< ? > targetAsClass, InternalConverter converter) {
+
+		InternalConverting ic = converter.convert(object);
+		ic.sourceAs(sourceAsClass).view();
+		if (sourceAsDTO)
+			ic.sourceAsDTO();
+		if (sourceAsJavaBean)
+			ic.sourceAsBean();
+		final Map<String,Object> m = ic.to(Map.class);
+
+		Constructor< ? > constr = targetClass.getDeclaredConstructors()[0];
+		int count = constr.getParameterCount();
+		Object[] objects = new Object[count];
+		Parameter[] params = constr.getParameters();
+
+		for (int i = 0; i < count; i++) {
+			Parameter param = params[i];
+			System.out.println(param);
+			Object o = null;
+
+			Class< ? > type = param.getType();
+
+			String name = param.getName();
+
+			if (m.containsKey(name)) {
+				o = m.get(name);
+			} else {
+				o = m.entrySet()
+						.stream()
+						.filter(e -> e.getKey().equalsIgnoreCase(name))
+						.findFirst()
+						.map(Entry::getValue)
+						.orElse(null);
+				// spec multiple ignorecase take first;
+			}
+			Object ret = Converters.standardConverter().convert(o).to(type);
+			objects[i] = ret;
+		}
+		try {
+			return constr.newInstance(objects);
+
+		} catch (Exception exception) {
+			throw new ConversionException(
+					"Could not create the record: " + targetAsClass, exception);
+		}
+
 	}
 
 	@SuppressWarnings({
@@ -917,8 +971,16 @@ class ConvertingImpl extends AbstractSpecifying<Converting>
 			return true;
 		if (asJavaBean && isWriteableJavaBean(cls))
 			return true;
+		if (RecordUtil.isRecord(cls))
+			return true;
 		return Dictionary.class.isAssignableFrom(cls);
 	}
+
+	static double javaVersion() {
+		return Double.parseDouble(System.getProperty("java.class.version"));
+	}
+
+
 
 	private Object trySpecialCases(InternalConverter converter) {
 		if (Boolean.class.equals(targetAsClass)) {
@@ -1101,6 +1163,25 @@ class ConvertingImpl extends AbstractSpecifying<Converting>
 		}
 		return result;
 	}
+
+	@SuppressWarnings("rawtypes")
+	private Map createMapFromRecord(Object obj, InternalConverter converter) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		Method[] methods = RecordUtil.methodsOfRecord(obj);
+		for (Method m : methods) {
+			Object ret;
+			try {
+				ret = m.invoke(obj);
+				result.put(m.getName(), ret);
+			} catch (Exception e) {
+				throw new ConversionException(
+						"Could not extract data from Record", e);
+			}
+		}
+		return result;
+	}
+
+
 
 	@SuppressWarnings({
 			"unchecked", "rawtypes"
@@ -1304,6 +1385,8 @@ class ConvertingImpl extends AbstractSpecifying<Converting>
 				return m;
 		} else if (hasGetProperties(sourceCls)) {
 			return getPropertiesDelegate(obj, sourceCls, converter);
+		} else if (RecordUtil.isRecord(sourceCls)) {
+			return createMapFromRecord(obj, converter);
 		}
 		return createMapFromInterface(obj, sourceClass);
 	}
@@ -1370,4 +1453,72 @@ class ConvertingImpl extends AbstractSpecifying<Converting>
 		}
 		return setters;
 	}
+
+	static class RecordUtil {
+		static boolean isRecord(Class< ? > cls) {
+
+			if (javaVersion() < 60) {
+				// TODO: 61 for java17
+				return false;
+			}
+
+			try {
+				Method m = Class.class.getMethod("isRecord");
+				if (m == null) {
+					return false;
+				}
+
+				Boolean b = (Boolean) m.invoke(cls);
+				return b.booleanValue();
+			} catch (Exception e) {
+				return false;
+			}
+		}
+
+		static Class< ? >	recordComponentClass		= null;
+		static Method		getAccessorMethod			= null;
+		static Method		getRecordComponentsMethod	= null;
+
+		static Method[] methodsOfRecord(Object obj) {
+			if (recordComponentClass == null || getAccessorMethod == null) {
+
+				try {
+					recordComponentClass = Class
+							.forName("java.lang.reflect.RecordComponent");
+					getAccessorMethod = recordComponentClass
+							.getMethod("getAccessor");
+				} catch (Exception e1) {
+					throw new RuntimeException(e1);
+				}
+			}
+			Object[] recordComponents = recordComponents(obj);
+
+			Method[] methods = Stream.of(recordComponents).map(rc -> {
+				try {
+					return getAccessorMethod.invoke(rc);
+				} catch (Exception e) {
+					throw new ConversionException(
+							"Could not get Method-Accessor of the RecordComponent: "
+									+ rc,
+							e);
+				}
+			}).toArray(Method[]::new);
+			return methods;
+		}
+
+		static Object[] recordComponents(Object obj) {
+			try {
+				if (getRecordComponentsMethod == null) {
+					getRecordComponentsMethod = Class.class
+							.getMethod("getRecordComponents");
+				}
+				return (Object[]) getRecordComponentsMethod
+						.invoke(obj.getClass());
+			} catch (Exception e) {
+				throw new ConversionException("", e);
+			}
+		}
+	}
+		
+
 }
