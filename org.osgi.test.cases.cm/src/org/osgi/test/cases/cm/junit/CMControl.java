@@ -8865,7 +8865,7 @@ public class CMControl extends DefaultTestBundleControl {
 			assertNoCallback(sync1_2, count1_2);
 
 			trace("CM Bundle is going to start.");
-			this.startTargetBundle(cmBundle);
+			this.startCmBundle(cmBundle);
 			assignCm();
 			trace("Wait for signal.");
 			count1_1 = assertCallback(sync1_1, count1_1);
