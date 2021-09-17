@@ -308,7 +308,7 @@ public class CMCoordinationTestCase extends DefaultTestBundleControl {
 						}
 
 					}, msProps);
-
+			sleep();// shis sould not be nessecary?
 
 			// create the configuration
 			final Dictionary<String,Object> props = new Hashtable<>();
