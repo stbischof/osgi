@@ -2,7 +2,9 @@
 /*/bin/
 /*/bin_test/
 /*/generated/
+/*/target/
 /*/doc/
+/**/org.eclipse.m2e.core.prefs
 .DS_Store
 Thumbs.db
 .metadata/
