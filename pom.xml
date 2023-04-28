@@ -95,6 +95,8 @@
 		<assertj.version>3.24.2</assertj.version>
 		<mockito.version>4.11.0</mockito.version>
 		<awaitility.version>4.2.0</awaitility.version>
+
+
 	</properties>
 	<build>
 		<sourceDirectory>${project.basedir}/src</sourceDirectory>
@@ -509,6 +511,12 @@
 		<module>org.osgi.namespace.extender</module>
 		<module>org.osgi.namespace.service</module>
 		<module>org.osgi.namespace.unresolvable</module>
+		<module>osgi.annotation</module>
+		<module>org.osgi.util.function</module>
+		<module>org.osgi.util.promise</module>
+		<module>org.osgi.util.pushstream</module>
+		<module>org.osgi.util.tracker</module>
+		<module>org.osgi.util.xml</module>
 
 	</modules>
 </project>
