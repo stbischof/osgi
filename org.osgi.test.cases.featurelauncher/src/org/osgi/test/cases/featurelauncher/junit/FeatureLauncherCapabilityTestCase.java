@@ -53,8 +53,7 @@ public class FeatureLauncherCapabilityTestCase {
 	@ParameterizedTest
 	@ValueSource(classes = {
 			/* Not a service FeatureLauncher.class, */
-			ArtifactRepositoryFactory.class,
-			FeatureRuntime.class
+			ArtifactRepositoryFactory.class, FeatureRuntime.class
 	})
 	public void test_service_capability(Class< ? > clz) {
 
@@ -101,9 +100,8 @@ public class FeatureLauncherCapabilityTestCase {
 				.isEqualTo(FeatureLauncher.class.getPackage().getName());
 
 		assertThat(implCap.getAttributes().get(CAPABILITY_VERSION_ATTRIBUTE))
-				.isEqualTo(Version
-						.parseVersion(
-								FeatureLauncherConstants.FEATURE_LAUNCHER_SPECIFICATION_VERSION));
+				.isEqualTo(Version.parseVersion(
+						FeatureLauncherConstants.FEATURE_LAUNCHER_SPECIFICATION_VERSION));
 	}
 
 }

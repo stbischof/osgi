@@ -13,12 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * SPDX-License-Identifier: Apache-2.0 
+ * SPDX-License-Identifier: Apache-2.0
  *******************************************************************************/
 
-package org.osgi.test.cases.featurelauncher.junit;
+package org.osgi.test.cases.featurelauncher.tb2;
 
-public class SignatureTestCase
-		extends org.osgi.test.support.signature.SignatureTestCase {
-	// concrete subclass
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+
+/**
+ * Second test bundle activator for Feature Launcher TCK.
+ */
+public class Activator implements BundleActivator {
+
+	@Override
+	public void start(BundleContext context) throws Exception {
+		// minimal activator
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+		// minimal activator
+	}
 }

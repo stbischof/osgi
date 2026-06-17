@@ -6,10 +6,26 @@
 	${p}.*
 Import-Package: ${-signaturetest}, *
 
+# SPI-Fly ServiceLoader consumer requirements: the TCK obtains these types via
+# java.util.ServiceLoader.load(...), so the OSGi Service Loader Mediator must
+# weave those calls. effective:=active keeps them out of bundle resolution.
+Require-Capability: \
+	osgi.serviceloader;cardinality:=multiple;effective:=active;filter:="(osgi.serviceloader=org.osgi.service.featurelauncher.FeatureLauncher)", \
+	osgi.serviceloader;cardinality:=multiple;effective:=active;filter:="(osgi.serviceloader=org.osgi.service.featurelauncher.repository.ArtifactRepositoryFactory)"
+
+# Test bundles tb1/tb2/tb3 are built on demand from bnd/tbN.bnd (cnf Make recipe)
+# and embedded at the bundle root; tests load them via getResourceAsStream("/tbN.jar").
+-includeresource					= \
+	tb1.jar, \
+	tb2.jar, \
+	tb3.jar
+
 -buildpath: \
     ${osgi.annotation.buildpath},\
 	org.osgi.test.support;version=project,\
 	org.osgi.service.featurelauncher;version=latest,\
+	org.osgi.service.feature;version=latest,\
+	org.osgi.service.cm;version=latest,\
 	org.osgi.resource;maven-scope=provided;version=1.0,\
 	org.osgi.namespace.implementation;version=1.0,\
 	org.osgi.namespace.service;version=1.0,\
@@ -20,6 +36,6 @@ Import-Package: ${-signaturetest}, *
     org.osgi.impl.service.log;version=latest,\
 	org.osgi.impl.service.featurelauncher;version=latest
 
--runproperties = ${runproperties}
 
+-runproperties = ${runproperties}
 -signaturetest                      = org.osgi.service.featurelauncher
